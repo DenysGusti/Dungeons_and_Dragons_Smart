@@ -4,8 +4,11 @@
 #include <string>
 #include <map>
 #include <exception>
+#include <iostream>
+#include <algorithm>
 
 #include "hero_info.h"
+#include "monster.h"
 
 using namespace std;
 
@@ -16,51 +19,103 @@ public:
             : name{name_}, hero_class{hero_class_}, hero_species{hero_species_}, max_hp{max_hp_},
               abilities{abilities_}, current_hp{max_hp_} {
         if (name.empty())
-            throw runtime_error{"name must not be empty"};
+            throw runtime_error{"Hero name must not be empty"};
         if (max_hp == 0)
-            throw runtime_error{"max_hp = 0"};
+            throw runtime_error{"max_hp >= 1"};
         if (abilities.size() != 6)
-            throw runtime_error{"abilities must have 6 values"};
-
-        if (abilities.find("Strength") == abilities.end())
-            throw runtime_error{"no Strength"};
-        if (auto ability = abilities["Strength"]; ability == 0 || ability >= 21)
-            throw runtime_error{"1 <= Strength <= 20"};
-
-        if (abilities.find("Dexterity") == abilities.end())
-            throw runtime_error{"no Dexterity"};
-        if (auto ability = abilities["Dexterity"]; ability == 0 || ability >= 21)
-            throw runtime_error{"1 <= Dexterity <= 20"};
-
-        if (abilities.find("Constitution") == abilities.end())
-            throw runtime_error{"no Constitution"};
-        if (auto ability = abilities["Constitution"]; ability == 0 || ability >= 21)
-            throw runtime_error{"1 <= Constitution <= 20"};
-
-        if (abilities.find("Intelligence") == abilities.end())
-            throw runtime_error{"no Intelligence"};
-        if (auto ability = abilities["Intelligence"]; ability == 0 || ability >= 21)
-            throw runtime_error{"1 <= Intelligence <= 20"};
-
-        if (abilities.find("Wisdom") == abilities.end())
-            throw runtime_error{"no Wisdom"};
-        if (auto ability = abilities["Wisdom"]; ability == 0 || ability >= 21)
-            throw runtime_error{"1 <= Wisdom <= 20"};
-
-        if (abilities.find("Charisma") == abilities.end())
-            throw runtime_error{"no Charisma"};
-        if (auto ability = abilities["Charisma"]; ability == 0 || ability >= 21)
-            throw runtime_error{"1 <= Charisma <= 20"};
-
+            throw runtime_error{"Hero abilities must have 6 values"};
+        {
+            auto it = abilities.find("Strength");
+            if (it == abilities.end())
+                throw runtime_error{"no Strength"};
+            if (unsigned ability = it->second; ability == 0 || ability >= 21)
+                throw runtime_error{"1 <= Strength <= 20"};
+        }
+        {
+            auto it = abilities.find("Dexterity");
+            if (it == abilities.end())
+                throw runtime_error{"no Dexterity"};
+            if (unsigned ability = it->second; ability == 0 || ability >= 21)
+                throw runtime_error{"1 <= Dexterity <= 20"};
+        }
+        {
+            auto it = abilities.find("Constitution");
+            if (it == abilities.end())
+                throw runtime_error{"no Constitution"};
+            if (unsigned ability = it->second; ability == 0 || ability >= 21)
+                throw runtime_error{"1 <= Constitution <= 20"};
+        }
+        {
+            auto it = abilities.find("Intelligence");
+            if (it == abilities.end())
+                throw runtime_error{"no Intelligence"};
+            if (unsigned ability = it->second; ability == 0 || ability >= 21)
+                throw runtime_error{"1 <= Intelligence <= 20"};
+        }
+        {
+            auto it = abilities.find("Wisdom");
+            if (it == abilities.end())
+                throw runtime_error{"no Wisdom"};
+            if (unsigned ability = it->second; ability == 0 || ability >= 21)
+                throw runtime_error{"1 <= Wisdom <= 20"};
+        }
+        {
+            auto it = abilities.find("Charisma");
+            if (it == abilities.end())
+                throw runtime_error{"no Charisma"};
+            if (unsigned ability = it->second; ability == 0 || ability >= 21)
+                throw runtime_error{"1 <= Charisma <= 20"};
+        }
         id = next_id++;
     }
 
     unsigned level_up() noexcept {
-        level = min(level + 1, 20u);
+        if (level <= 19)
+            ++level;
         return level;
     }
 
-    friend ostream &operator<<(ostream &o, const Hero &obj) {
+    [[nodiscard]] bool fight(Monster &m) {
+        if (current_hp == 0)
+            return false;
+
+        const unsigned max_ability_value
+                = max_element(
+                        abilities.begin(), abilities.end(),
+                        [](const auto &lhs, const auto &rhs) -> bool {
+                            const auto &[key_lhs, value_lhs] = lhs;
+                            const auto &[key_rhs, value_rhs] = rhs;
+                            return value_lhs < value_rhs;
+                        })->second;
+
+        const unsigned damage = level * max_ability_value;
+        const unsigned attack = m.get_attack();
+
+        while (current_hp >= 1) {
+            m.take_damage(damage);
+            if (m.is_dead())
+                return true;
+            if (current_hp > attack)
+                current_hp -= attack;
+            else
+                current_hp = 0;
+        }
+        return false;
+    }
+
+    [[nodiscard]] unsigned get_id() const noexcept {
+        return id;
+    }
+
+    [[nodiscard]] unsigned get_level() const noexcept {
+        return level;
+    }
+
+    [[nodiscard]] unsigned get_current_hp() const noexcept {
+        return current_hp;
+    }
+
+    friend ostream &operator<<(ostream &o, const Hero &obj) noexcept {
         o << '[' << obj.id << ", " << obj.name
           << ", (" << obj.hero_class << ", " << obj.hero_species << ", " << obj.level << "), {"
           << obj.abilities.at("Charisma") << ", "
