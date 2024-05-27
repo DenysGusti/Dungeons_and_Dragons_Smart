@@ -3,9 +3,12 @@
 
 #include <map>
 #include <string>
-#include <utility>
+#include <memory>
 #include <exception>
 #include <iostream>
+
+#include "hero.h"
+#include "campaign.h"
 
 using namespace std;
 
@@ -61,6 +64,12 @@ public:
         return old_size - ids.size();
     }
 
+    void campaign_encounter_monster(unsigned id, Monster &m) {
+        if (!campaign)
+            throw runtime_error{"Player doesn't have campaign"};
+        campaign->encounter_monster(id, m);
+    }
+
     ostream &print_campaign(ostream &o) const noexcept {
         if (campaign)
             o << *campaign;
@@ -69,7 +78,7 @@ public:
         return o;
     }
 
-    friend ostream& operator<<(ostream& o, const Player& p) {
+    friend ostream &operator<<(ostream &o, const Player &p) {
         o << '[' << p.first_name << ' ' << p.last_name << ", {";
         for (const auto &[key, value]: p.ids)
             if (value) {

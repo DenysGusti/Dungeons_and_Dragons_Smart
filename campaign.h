@@ -3,9 +3,11 @@
 
 #include <map>
 #include <string>
-#include <utility>
+#include <memory>
 #include <exception>
 #include <iostream>
+
+#include "monster.h"
 
 using namespace std;
 

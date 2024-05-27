@@ -16,8 +16,8 @@ class Hero {
 public:
     Hero(string_view name_, Hero_Class hero_class_, Hero_Species hero_species_, unsigned max_hp_,
          const map<string, unsigned> &abilities_)
-            : name{name_}, hero_class{hero_class_}, hero_species{hero_species_}, max_hp{max_hp_},
-              abilities{abilities_}, current_hp{max_hp_} {
+            : name{name_}, hero_class{hero_class_}, hero_species{hero_species_}, max_hp{max_hp_}, current_hp{max_hp_},
+              abilities{abilities_} {
         if (name.empty())
             throw runtime_error{"Hero name must not be empty"};
         if (max_hp == 0)
