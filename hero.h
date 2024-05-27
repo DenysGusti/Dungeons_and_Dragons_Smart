@@ -115,6 +115,22 @@ public:
         return current_hp;
     }
 
+    [[nodiscard]] unsigned get_max_hp() const noexcept {
+        return max_hp;
+    }
+
+    [[nodiscard]] Hero_Class get_hero_class() const noexcept {
+        return hero_class;
+    }
+
+    [[nodiscard]] Hero_Species get_hero_species() const noexcept {
+        return hero_species;
+    }
+
+    [[nodiscard]] const string &get_name() const noexcept {
+        return name;
+    }
+
     friend ostream &operator<<(ostream &o, const Hero &obj) noexcept {
         o << '[' << obj.id << ", " << obj.name
           << ", (" << obj.hero_class << ", " << obj.hero_species << ", " << obj.level << "), {"

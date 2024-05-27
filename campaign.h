@@ -52,6 +52,14 @@ public:
             hero->level_up();
     }
 
+    [[nodiscard]] const string &get_name() const noexcept {
+        return name;
+    }
+
+    [[nodiscard]] unsigned get_min_level() const noexcept {
+        return min_level;
+    }
+
     friend ostream &operator<<(ostream &o, const Campaign &p) noexcept {
         o << '[' << p.name << " Campaign, Min_Level " << p.min_level << ", {";
         for (const auto &[key, value]: p.ids)

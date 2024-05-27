@@ -70,6 +70,15 @@ public:
         campaign->encounter_monster(id, m);
     }
 
+
+    [[nodiscard]] const string &get_first_name() const noexcept {
+        return first_name;
+    }
+
+    [[nodiscard]] const string &get_last_name() const noexcept {
+        return last_name;
+    }
+
     ostream &print_campaign(ostream &o) const noexcept {
         if (campaign)
             o << *campaign;

@@ -39,6 +39,14 @@ public:
         return attack;
     }
 
+    [[nodiscard]] unsigned get_health() const noexcept {
+        return health;
+    }
+
+    [[nodiscard]] const string &get_name() const noexcept {
+        return name;
+    }
+
     friend ostream &operator<<(ostream &o, const Monster &h) noexcept {
         o << '[' << h.name << ", " << h.health << " HP, " << h.attack << " ATK" << h.additional_information() << ']';
         return o;
